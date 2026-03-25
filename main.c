@@ -46,6 +46,39 @@ int Lpiece[4][4] = {
   {0,0,0,0}
 };
 
+int gametable[21][12] = {
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,1},
+  {1,1,1,1,1,1,1,1,1,1,1,1}
+}; 
+
+void drawgameboard() {
+  for(int i = 0; i <=20; i++) {
+    for( int j = 0; j <=11; j++) {
+      printf("%d", gametable[i][j]);
+    }
+    printf("\n"); 
+  }
+}
+
 void enableRawMode() { 
   struct termios raw = term; 
   raw.c_lflag &= ~(ECHO | ICANON); 
@@ -73,10 +106,11 @@ int main() {
 
   while(1) { 
 
-    printf("This is the loop\r\n");
+  printf("\x1b[2J"); 
+  //  printf("This is the loop\r\n");
 
     char key = get_key(); 
-    printf("this is the key pressed: %c\r\n", key);
+   // printf("this is the key pressed: %c\r\n", key);
     
     switch(key) { 
       case 'a': printf("This is the left button\r\n"); break;
@@ -84,8 +118,9 @@ int main() {
       case 's': printf("This is the down button\r\n"); break; 
       case 'q': printf("This is the quit button\r\n"); break; 
     }
-   printf("    00000\r\n "); 
-   usleep(100000); 
+   drawgameboard(); 
+   
+   usleep(1000000); 
   }
 
 
