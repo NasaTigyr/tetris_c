@@ -3,6 +3,7 @@
 #include <unistd.h> 
 
 static struct termios term; 
+static char flag = '1'; 
 
 int Block[4][4] = {
   {0,0,0,0},
@@ -70,10 +71,10 @@ int gametable[21][12] = {
   {1,1,1,1,1,1,1,1,1,1,1,1}
 }; 
 
-void drawgameboard() {
+void frame() {
   for(int i = 0; i <=20; i++) {
     for( int j = 0; j <=11; j++) {
-      printf("%d", gametable[i][j]);
+      ( gametable[i][j] == 1) ? putchar('#') : putchar(' ') ; 
     }
     printf("\n"); 
   }
@@ -98,29 +99,37 @@ char get_key() {
   return c; 
 }
 
+void update(char key) { 
+    switch(key) { 
+      case 'a': printf("This is the left button\r\n"); break;
+      case 'd': printf("This is the right button\r\n"); break;
+      case 's': printf("This is the down button\r\n"); break; 
+      case 'q': printf("This is the quit button\r\n"); flag = '0'; break; 
+    }
+}
+
 int main() { 
+
   tcgetattr(STDIN_FILENO, &term); 
   atexit(); 
   setvbuf(stdout, NULL, _IONBF, 0); 
   enableRawMode(); 
 
-  while(1) { 
+  printf("\x1b[2J"); 
+  while(flag == '1') { 
 
   printf("\x1b[2J"); 
-  //  printf("This is the loop\r\n");
+  printf("\033[H"); 
+//  printf("This is the loop\r\n");
 
     char key = get_key(); 
+    update(key);  
+    frame(); 
+
    // printf("this is the key pressed: %c\r\n", key);
     
-    switch(key) { 
-      case 'a': printf("This is the left button\r\n"); break;
-      case 'd': printf("This is the right button\r\n"); break;
-      case 's': printf("This is the down button\r\n"); break; 
-      case 'q': printf("This is the quit button\r\n"); break; 
-    }
-   drawgameboard(); 
    
-   usleep(1000000); 
+   usleep(100000); 
   }
 
 
