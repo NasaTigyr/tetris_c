@@ -13,6 +13,14 @@ static char flag = '1';
 int gametable[H][W]; 
 int tekushta[4][4]; 
 
+struct Tekushtachast { 
+
+int chast[4][4]; 
+int x; 
+int y; 
+
+};
+
 int B[4][4] = {
   {0,0,0,0},
   {0,1,1,0},
@@ -91,7 +99,7 @@ void draw() {
     for( int j = 0; j < W; j++) {
 //      printf("%d", gametable[i][j]);
       switch(gametable[i][j]) {
-        case 0: printf(" ");break;
+        case 0: printf(".");break;
         case 1: printf("#");break;
         case 2: printf("-");break;
         case 3: printf("!");break;
@@ -110,8 +118,11 @@ void printtekushta( int neshto[4][4]) {
   }
 }
 
+struct Tekushtachast tekushtachast;
 void otmestvane(char key, char *flag) {
   if(*flag == 0) {
+        tekushtachast.x = 0;
+        tekushtachast.y = W/2 - 2;
 //    int num = rand()%7;
     srand(time(NULL));
     int num = rand()%7;
@@ -120,7 +131,7 @@ void otmestvane(char key, char *flag) {
       case 0: 
         for(int i = 0; i < 4; i++) { 
           for(int j = 0; j < 4; j++) { 
-           tekushta[i][j] = B[i][j]; 
+           tekushtachast.chast[i][j] = B[i][j]; 
           }
         }
         printf("This is case0\n");
@@ -128,7 +139,7 @@ void otmestvane(char key, char *flag) {
       case 1: 
         for(int i = 0; i < 4; i++) { 
           for(int j = 0; j < 4; j++) { 
-           tekushta[i][j] = Line[i][j]; 
+           tekushtachast.chast[i][j] = Line[i][j]; 
           }
         }
         printf("This is case1\n");
@@ -136,7 +147,7 @@ void otmestvane(char key, char *flag) {
       case 2: 
         for(int i = 0; i < 4; i++) { 
           for(int j = 0; j < 4; j++) { 
-           tekushta[i][j] = T[i][j]; 
+           tekushtachast.chast[i][j] = T[i][j]; 
           }
         }
         printf("This is case2\n");
@@ -144,7 +155,7 @@ void otmestvane(char key, char *flag) {
       case 3: 
         for(int i = 0; i < 4; i++) { 
           for(int j = 0; j < 4; j++) { 
-           tekushta[i][j] = S[i][j]; 
+           tekushtachast.chast[i][j] = S[i][j]; 
           }
         }
         printf("This is case3\n");
@@ -152,7 +163,7 @@ void otmestvane(char key, char *flag) {
       case 4: 
         for(int i = 0; i < 4; i++) { 
           for(int j = 0; j < 4; j++) { 
-           tekushta[i][j] = Z[i][j]; 
+           tekushtachast.chast[i][j] = Z[i][j]; 
           }
         }
         printf("This is case4\n");
@@ -160,7 +171,7 @@ void otmestvane(char key, char *flag) {
       case 5: 
         for(int i = 0; i < 4; i++) { 
           for(int j = 0; j < 4; j++) { 
-           tekushta[i][j] = L[i][j]; 
+           tekushtachast.chast[i][j] = L[i][j]; 
           }
         }
         printf("This is case5\n");
@@ -168,7 +179,7 @@ void otmestvane(char key, char *flag) {
       case 6: 
         for(int i = 0; i < 4; i++) { 
           for(int j = 0; j < 4; j++) { 
-           tekushta[i][j] = Z[i][j]; 
+           tekushtachast.chast[i][j] = Z[i][j]; 
           }
         }
         printf("This is case6\n");
@@ -177,11 +188,11 @@ void otmestvane(char key, char *flag) {
       
 //     printtekushta(tekushta);
   
-    int x = W/2 - 1;
+//    int x = W/2 - 1;
       for(int i = 0; i < 4; i++) { 
         for(int j = 0; j < 4; j++) { 
 //          printf("This is i: %d and this is j: %d\n", i, j);
-         gametable[i+1][x + j] = tekushta[i][j]; 
+         gametable[tekushtachast.x + i][tekushtachast.y + j] |= tekushtachast.chast[i][j]; 
         }
       }
 
@@ -189,6 +200,7 @@ void otmestvane(char key, char *flag) {
   } else {
 
   printf("This is inside of the loop and the flag is equal to: %d \n", *flag); 
+     
     
   }
 }
