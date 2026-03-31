@@ -110,8 +110,8 @@ void printtekushta( int neshto[4][4]) {
   }
 }
 
-void otmestvane(char key, char flag) {
-  if(flag == 0) {
+void otmestvane(char key, char *flag) {
+  if(*flag == 0) {
 //    int num = rand()%7;
     srand(time(NULL));
     int num = rand()%7;
@@ -184,6 +184,12 @@ void otmestvane(char key, char flag) {
          gametable[i+1][x + j] = tekushta[i][j]; 
         }
       }
+
+    *flag = 1;
+  } else {
+
+  printf("This is inside of the loop and the flag is equal to: %d \n", *flag); 
+    
   }
 }
 
@@ -201,7 +207,7 @@ int main() {
   enableRawMode(); 
   printf("\x1b[2J"); 
 
-  char flag = 0;
+  char fallingpiece = 0;
   char run = 1;
   gametable_init(); 
 
@@ -212,7 +218,7 @@ int main() {
 //  printf("This is the loop\r\n");
 
     char key = get_key(); 
-    otmestvane(key, flag);
+    otmestvane(key, &fallingpiece);
     draw(); 
 
    // printf("this is the key pressed: %c\r\n", key);
