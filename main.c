@@ -135,12 +135,12 @@ int check_collision(int nx, int ny) {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (tekushtachast.chast[i][j] == 1) {
-                int bi = nx + i;
-                int bj = ny + j;
-                /* out of bounds or non-zero cell that isn't our own piece */
-                if (bi < 0 || bi >= H || bj < 0 || bj >= W)
+                int bx = nx + i;
+                int by = ny + j;
+                /* proverka da ne se izleze ot masiva */
+                if (bx < 0 || bx >= H || by < 0 || by >= W)
                     return 1;
-                if (gametable[bi][bj] != 0)
+                if (gametable[bx][by] != 0) /* proverka da ne bi tazi chast da e neshto drugo?(stena, pod...) */
                     return 1;
             }
         }
@@ -167,11 +167,11 @@ int falldown() {
 
     if (check_collision(tekushtachast.x + 1, tekushtachast.y)) {
         /* Collision below → lock piece in current position */
-        drawpiece();                       /* put it back where it was */
-        return 1;                           /* signal: spawn new piece  */
+        drawpiece();                       /* da vyrne chasta tam kydeto beshe predi proverkata*/
+        return 1;                           /* promeni flag za da pusne novo parche. */
     }
 
-    /* Safe to move down */
+    /* da se printira na novoto mqsto*/
     tekushtachast.x++;
     drawpiece();
     return 0;
@@ -265,7 +265,7 @@ void otmestvane(char key, char *flag) {
       case 'o': falldown();break;
       case ',': printf("The , button is perssed");break;
     }
-                int locked = falldown();
+        int locked = falldown();
         if (locked) *flag = 0;
      
     
