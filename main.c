@@ -21,6 +21,7 @@ int y;
 
 };
 
+struct Tekushtachast tekushtachast;
 int B[4][4] = {
   {0,0,0,0},
   {0,1,1,0},
@@ -109,7 +110,74 @@ void draw() {
   }
 }
 
-void printtekushta( int neshto[4][4]) { 
+void iztriichast() {
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      if(tekushtachast.chast[i][j] == 1) {
+        gametable[tekushtachast.x + i][tekushtachast.y +j] = 0;
+      }
+    }
+  }
+}
+
+void drawpiece() {
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      if(tekushtachast.chast[i][j] == 1) {
+        gametable[tekushtachast.x + i][tekushtachast.y +j] = 1;
+      }
+    }
+  }
+}
+
+
+int check_collision(int nx, int ny) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (tekushtachast.chast[i][j] == 1) {
+                int bi = nx + i;
+                int bj = ny + j;
+                /* out of bounds or non-zero cell that isn't our own piece */
+                if (bi < 0 || bi >= H || bj < 0 || bj >= W)
+                    return 1;
+                if (gametable[bi][bj] != 0)
+                    return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void move_left() { 
+  iztriichast();
+  if(!check_collision(tekushtachast.x, tekushtachast.y -1))
+    tekushtachast.y--;
+  drawpiece();
+}
+
+void move_right() { 
+  iztriichast();
+  if(!check_collision(tekushtachast.x, tekushtachast.y + 1))
+    tekushtachast.y++;
+  drawpiece();
+}
+
+int falldown() {
+    iztriichast();                          /* remove from board */
+
+    if (check_collision(tekushtachast.x + 1, tekushtachast.y)) {
+        /* Collision below → lock piece in current position */
+        drawpiece();                       /* put it back where it was */
+        return 1;                           /* signal: spawn new piece  */
+    }
+
+    /* Safe to move down */
+    tekushtachast.x++;
+    drawpiece();
+    return 0;
+}
+
+void printtekushta( int neshto[4][4]) {  // za debugvane na pravilni parcheta.
   for(int i = 0; i < 4; i++) {
     for(int j = 0; j < 4; j++) {
       printf("%d", neshto[i][j]);
@@ -118,12 +186,12 @@ void printtekushta( int neshto[4][4]) {
   }
 }
 
-struct Tekushtachast tekushtachast;
+  
+
 void otmestvane(char key, char *flag) {
   if(*flag == 0) {
-        tekushtachast.x = 0;
+        tekushtachast.x = 1;
         tekushtachast.y = W/2 - 2;
-//    int num = rand()%7;
     srand(time(NULL));
     int num = rand()%7;
     printf("This is the rand num: %d", num);
@@ -186,20 +254,19 @@ void otmestvane(char key, char *flag) {
       break;
     }
       
-//     printtekushta(tekushta);
-  
-//    int x = W/2 - 1;
-      for(int i = 0; i < 4; i++) { 
-        for(int j = 0; j < 4; j++) { 
-//          printf("This is i: %d and this is j: %d\n", i, j);
-         gametable[tekushtachast.x + i][tekushtachast.y + j] |= tekushtachast.chast[i][j]; 
-        }
-      }
+      drawpiece();
 
     *flag = 1;
   } else {
 
-  printf("This is inside of the loop and the flag is equal to: %d \n", *flag); 
+    switch(key) { 
+      case 'a': move_left();break;
+      case 'e': move_right();break;
+      case 'o': falldown();break;
+      case ',': printf("The , button is perssed");break;
+    }
+                int locked = falldown();
+        if (locked) *flag = 0;
      
     
   }
