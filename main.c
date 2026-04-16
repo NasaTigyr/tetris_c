@@ -120,6 +120,45 @@ void iztriichast() {
   }
 }
 
+void delete_line() { 
+  int line = 0; 
+
+  for(int i = 1; i < H-1; i++) { 
+    char full =1; 
+    for(int j = 1; j < W-1; j++) { 
+      if(gametable[i][j] == 0) {
+        full = 0;
+        break;
+      }
+    }
+      
+    if(full == 1) {
+      line = i;
+      for(int z = 1; z < W-1; z++) {
+        gametable[i-1][z] = gametable[i][z] ;
+      }
+
+       //for( int i = line; i >= 0; i--) {
+         //for(int j = 1; j < W-1; j++) {
+           //gametable[i+1][j] = gametable[i][j];
+         //}
+       //}
+
+    }
+  }
+}
+
+void rotateclck() {
+
+  
+
+}
+
+
+void rotatecntrclck() {
+
+
+}
 void drawpiece() {
   for(int i = 0; i < 4; i++) {
     for(int j = 0; j < 4; j++) {
@@ -263,10 +302,13 @@ void otmestvane(char key, char *flag) {
       case 'a': move_left();break;
       case 'e': move_right();break;
       case 'o': falldown();break;
-      case ',': printf("The , button is perssed");break;
+     // case ',': printf("The , button is perssed");break;
     }
         int locked = falldown();
-        if (locked) *flag = 0;
+        if (locked) {
+        delete_line();
+        *flag = 0;
+        }
      
     
   }
