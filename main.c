@@ -100,7 +100,7 @@ void draw() {
     for( int j = 0; j < W; j++) {
 //      printf("%d", gametable[i][j]);
       switch(gametable[i][j]) {
-        case 0: printf(".");break;
+        case 0: printf(" ");break;
         case 1: printf("#");break;
         case 2: printf("-");break;
         case 3: printf("!");break;
@@ -140,7 +140,7 @@ void delete_line() {
       for( int j = 1; j < W-1; j++) {
         gametable[1][j] = 0;
       }
-      
+      i-=4;  
     }
   }
 }
@@ -369,7 +369,6 @@ void otmestvane(char key, char *flag) {
         delete_line();
         *flag = 0;
         }
-     
     
   }
 }
@@ -403,12 +402,10 @@ int main() {
     draw(); 
 
    // printf("this is the key pressed: %c\r\n", key);
-    
      
    usleep(200000); 
 //   run = 0;
   }
-
 
   tcsetattr(0, TCSAFLUSH, &term); 
   return 0; 
