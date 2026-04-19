@@ -407,6 +407,7 @@ int main() {
     // start input thread
     pthread_t tid;
     pthread_create(&tid, NULL, input_thread, NULL);
+    pthread_detach(tid);
 
     const int TICK_MS = 200;
     const int POLL_MS = 10;
@@ -426,7 +427,7 @@ int main() {
             draw();
         }
 
-        usleep(POLL_MS * 1000);
+        usleep(POLL_MS * 1000); // 1000 = 1ms, Tova e mongo byrzo, mamka mu... 
         elapsed += POLL_MS;
 
         if (elapsed >= TICK_MS) {
