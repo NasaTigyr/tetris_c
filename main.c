@@ -1,4 +1,5 @@
 #include <stdio.h> 
+#include <pthread.h> 
 #include <stdlib.h> 
 #include <termios.h> 
 #include <unistd.h> 
@@ -375,51 +376,72 @@ char get_key() {
   return c; 
 }
 
-int main() { 
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+char latest_key = 0;
 
-  printf("insert a seed here: "); 
-  scanf("%d", &seed); 
-  srand(seed);
-
-  tcgetattr(STDIN_FILENO, &term); 
-  setvbuf(stdout, NULL, _IONBF, 0); 
-  enableRawMode(); 
-  printf("\x1b[2J"); 
-
-  char fallingpiece = 0;
-  char run = 1;
-  gametable_init(); 
-
-const int TICK_MS = 200; 
-const int POLL_MS = 200; 
-int elapsed = 0; 
-
-while(run == 1) {
-  char key = get_key(); 
-  if(key != 0) {
-    otmestvane(key, &fallingpiece); 
-    printf("\x1b[2J"); 
-    printf("\033[H"); 
-    draw(); 
-  }
-
-  usleep(POLL_MS*1000); 
-  elapsed += POLL_MS;
-
-  if(elapsed >= TICK_MS) {
-    elapsed = 0; 
-    if(fallingpiece == 0) {
-      otmestvane(0, &fallingpiece);
-    } else {
-      gravity_tick(&fallingpiece);
+void *input_thread(void *arg) {
+    while (1) {
+        char key = get_key();
+        if (key != 0) {
+            pthread_mutex_lock(&lock);
+            latest_key = key;
+            pthread_mutex_unlock(&lock);
+        }
+        usleep(1000); // 1ms — very responsive
     }
-    printf("\x1b[2J"); 
-    printf("\033[H"); 
-    otmestvane(0, &fallingpiece); 
-    draw(); 
-  }
+    return NULL;
 }
 
-  tcsetattr(0, TCSAFLUSH, &term); 
-  return 0; 
+int main() {
+    printf("insert a seed here: ");
+    scanf("%d", &seed);
+    srand(seed);
+    tcgetattr(STDIN_FILENO, &term);
+    setvbuf(stdout, NULL, _IONBF, 0);
+    enableRawMode();
+    printf("\x1b[2J");
+
+    char fallingpiece = 0;
+    gametable_init();
+
+    // start input thread
+    pthread_t tid;
+    pthread_create(&tid, NULL, input_thread, NULL);
+
+    const int TICK_MS = 200;
+    const int POLL_MS = 10;
+    int elapsed = 0;
+
+    while (1) {
+        // grab and clear the latest key atomically
+        pthread_mutex_lock(&lock);
+        char key = latest_key;
+        latest_key = 0;
+        pthread_mutex_unlock(&lock);
+
+        if (key != 0) {
+            otmestvane(key, &fallingpiece);
+            printf("\x1b[2J");
+            printf("\033[H");
+            draw();
+        }
+
+        usleep(POLL_MS * 1000);
+        elapsed += POLL_MS;
+
+        if (elapsed >= TICK_MS) {
+            elapsed = 0;
+            if (fallingpiece == 0) {
+                otmestvane(0, &fallingpiece);
+            } else {
+                gravity_tick(&fallingpiece);
+            }
+            printf("\x1b[2J");
+            printf("\033[H");
+            draw();
+        }
+    }
+
+    tcsetattr(0, TCSAFLUSH, &term);
+    return 0;
 }
