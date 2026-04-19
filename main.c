@@ -7,6 +7,8 @@
 static struct termios term; 
 static char flag = '1'; 
 
+static int seed = 0; 
+
 #define H 22
 #define W 12
 
@@ -140,7 +142,7 @@ void delete_line() {
       for( int j = 1; j < W-1; j++) {
         gametable[1][j] = 0;
       }
-      i-=4;  
+      i--;  
     }
   }
 }
@@ -289,9 +291,10 @@ void otmestvane(char key, char *flag) {
   if(*flag == 0) {
         tekushtachast.x = 1;
         tekushtachast.y = W/2 - 2;
-    srand(time(NULL));
+//    srand(time(NULL));
+      srand(seed);
     int num = rand()%7;
-    printf("This is the rand num: %d", num);
+    //printf("This is the rand num: %d", num);
     switch(num) {
       case 0: 
         for(int i = 0; i < 4; i++) { 
@@ -299,7 +302,7 @@ void otmestvane(char key, char *flag) {
            tekushtachast.chast[i][j] = B[i][j]; 
           }
         }
-        printf("This is case0\n");
+        //printf("This is case0\n");
       break;
       case 1: 
         for(int i = 0; i < 4; i++) { 
@@ -381,6 +384,9 @@ char get_key() {
 }
 
 int main() { 
+
+  printf("insert a seed here: "); 
+  scanf("%d", &seed); 
 
   tcgetattr(STDIN_FILENO, &term); 
   setvbuf(stdout, NULL, _IONBF, 0); 
