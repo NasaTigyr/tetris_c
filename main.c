@@ -300,7 +300,6 @@ void otmestvane(char key, char *flag) {
            tekushtachast.chast[i][j] = B[i][j]; 
           }
         }
-        //printf("This is case0\n");
       break;
       case 1: 
         for(int i = 0; i < 4; i++) { 
@@ -308,7 +307,6 @@ void otmestvane(char key, char *flag) {
            tekushtachast.chast[i][j] = Line[i][j]; 
           }
         }
-        printf("This is case1\n");
       break;
       case 2: 
         for(int i = 0; i < 4; i++) { 
@@ -316,7 +314,6 @@ void otmestvane(char key, char *flag) {
            tekushtachast.chast[i][j] = T[i][j]; 
           }
         }
-        printf("This is case2\n");
       break;
       case 3: 
         for(int i = 0; i < 4; i++) { 
@@ -324,7 +321,6 @@ void otmestvane(char key, char *flag) {
            tekushtachast.chast[i][j] = S[i][j]; 
           }
         }
-        printf("This is case3\n");
       break;
       case 4: 
         for(int i = 0; i < 4; i++) { 
@@ -332,7 +328,6 @@ void otmestvane(char key, char *flag) {
            tekushtachast.chast[i][j] = Z[i][j]; 
           }
         }
-        printf("This is case4\n");
       break;
       case 5: 
         for(int i = 0; i < 4; i++) { 
@@ -340,7 +335,6 @@ void otmestvane(char key, char *flag) {
            tekushtachast.chast[i][j] = L[i][j]; 
           }
         }
-        printf("This is case5\n");
       break;
       case 6: 
         for(int i = 0; i < 4; i++) { 
@@ -348,7 +342,6 @@ void otmestvane(char key, char *flag) {
            tekushtachast.chast[i][j] = J[i][j]; 
           }
         }
-        printf("This is case6\n");
       break;
     }
       
@@ -363,14 +356,15 @@ void otmestvane(char key, char *flag) {
       case 'o': falldown();break;
       case 'w': rotatecntrclck();break;
       case 'v': rotateclck(); break; 
-     // case ',': printf("The , button is perssed");break;
     }
-        int locked = falldown();
-        if (locked) {
-        delete_line();
-        *flag = 0;
-        }
-    
+  }
+}
+
+void gravity_tick(char *flag) {
+  int locked = falldown();
+  if (locked) {
+  delete_line();
+  *flag = 0;
   }
 }
 
@@ -396,21 +390,35 @@ int main() {
   char run = 1;
   gametable_init(); 
 
-  while(run == 1) { 
+const int TICK_MS = 200; 
+const int POLL_MS = 200; 
+int elapsed = 0; 
 
-  printf("\x1b[2J"); 
-  printf("\033[H"); 
-//  printf("This is the loop\r\n");
-
-    char key = get_key(); 
-    otmestvane(key, &fallingpiece);
+while(run == 1) {
+  char key = get_key(); 
+  if(key != 0) {
+    otmestvane(key, &fallingpiece); 
+    printf("\x1b[2J"); 
+    printf("\033[H"); 
     draw(); 
-
-   // printf("this is the key pressed: %c\r\n", key);
-     
-   usleep(200000); 
-//   run = 0;
   }
+
+  usleep(POLL_MS*1000); 
+  elapsed += POLL_MS;
+
+  if(elapsed >= TICK_MS) {
+    elapsed = 0; 
+    if(fallingpiece == 0) {
+      otmestvane(0, &fallingpiece);
+    } else {
+      gravity_tick(&fallingpiece);
+    }
+    printf("\x1b[2J"); 
+    printf("\033[H"); 
+    otmestvane(0, &fallingpiece); 
+    draw(); 
+  }
+}
 
   tcsetattr(0, TCSAFLUSH, &term); 
   return 0; 
