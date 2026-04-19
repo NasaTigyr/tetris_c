@@ -286,8 +286,7 @@ void rotatecntrclck() {
     drawpiece();
 } 
 
-void otmestvane(char key, char *flag) {
-  if(*flag == 0) {
+void spawnpiece() { 
         tekushtachast.x = 1;
         tekushtachast.y = W/2 - 2;
 //    srand(time(NULL));
@@ -347,9 +346,9 @@ void otmestvane(char key, char *flag) {
     }
       
       drawpiece();
+}
 
-    *flag = 1;
-  } else {
+void handle_input(char key) {
 
     switch(key) { 
       case 'a': move_left();break;
@@ -358,7 +357,6 @@ void otmestvane(char key, char *flag) {
       case 'w': rotatecntrclck();break;
       case 'v': rotateclck(); break; 
     }
-  }
 }
 
 void gravity_tick(char *flag) {
@@ -396,6 +394,7 @@ int main() {
     printf("insert a seed here: ");
     scanf("%d", &seed);
     srand(seed);
+
     tcgetattr(STDIN_FILENO, &term);
     setvbuf(stdout, NULL, _IONBF, 0);
     enableRawMode();
@@ -421,7 +420,8 @@ int main() {
         pthread_mutex_unlock(&lock);
 
         if (key != 0) {
-            otmestvane(key, &fallingpiece);
+            //otmestvane(key, &fallingpiece);
+            handle_input(key);
             printf("\x1b[2J");
             printf("\033[H");
             draw();
@@ -433,10 +433,13 @@ int main() {
         if (elapsed >= TICK_MS) {
             elapsed = 0;
             if (fallingpiece == 0) {
-                otmestvane(0, &fallingpiece);
+                //otmestvane(0, &fallingpiece);
+                spawnpiece();
+                fallingpiece = 1; 
             } else {
                 gravity_tick(&fallingpiece);
             }
+
             printf("\x1b[2J");
             printf("\033[H");
             draw();
