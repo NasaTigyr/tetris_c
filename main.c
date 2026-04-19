@@ -5,8 +5,6 @@
 #include <time.h> 
 
 static struct termios term; 
-static char flag = '1'; 
-
 static int seed = 0; 
 
 #define H 22
@@ -292,7 +290,7 @@ void otmestvane(char key, char *flag) {
         tekushtachast.x = 1;
         tekushtachast.y = W/2 - 2;
 //    srand(time(NULL));
-      srand(seed);
+//      srand(seed);
     int num = rand()%7;
     //printf("This is the rand num: %d", num);
     switch(num) {
@@ -387,6 +385,7 @@ int main() {
 
   printf("insert a seed here: "); 
   scanf("%d", &seed); 
+  srand(seed);
 
   tcgetattr(STDIN_FILENO, &term); 
   setvbuf(stdout, NULL, _IONBF, 0); 
