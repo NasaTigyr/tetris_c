@@ -286,8 +286,8 @@ void rotatecntrclck() {
     drawpiece();
 } 
 
-void spawnpiece() { 
-        tekushtachast.x = 1;
+int spawnpiece() { 
+        tekushtachast.x = 0;
         tekushtachast.y = W/2 - 2;
 //    srand(time(NULL));
 //      srand(seed);
@@ -344,8 +344,11 @@ void spawnpiece() {
         }
       break;
     }
-      
+    if(check_collision(tekushtachast.x, tekushtachast.y)) {
+      return -1;
+    }
       drawpiece();
+      return 0;
 }
 
 void handle_input(char key) {
@@ -434,7 +437,14 @@ int main() {
             elapsed = 0;
             if (fallingpiece == 0) {
                 //otmestvane(0, &fallingpiece);
-                spawnpiece();
+                if(spawnpiece() == -1) {
+                  printf("\x1b[2J");
+                  printf("\033[H");
+                  draw();
+                  printf("GAME OVER\n");
+                  tcsetattr(0, TCSAFLUSH, &term);
+                  exit(0);
+               }
                 fallingpiece = 1; 
             } else {
                 gravity_tick(&fallingpiece);
