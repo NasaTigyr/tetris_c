@@ -121,7 +121,7 @@ void iztriichast() {
   }
 }
 
-void delete_line() {
+void delete_line(int *score) {
   for(int i= 1; i < H -1; i++){
     int full = 1;
     for(int j= 1; j < W -1; j++){
@@ -132,6 +132,7 @@ void delete_line() {
   
     }
     if(full == 1) {
+      *score += 10;
       for(int k = i; k > 1; k--) {
         for( int j = 1; j < W-1; j++) {
           gametable[k][j] = gametable[k-1][j];
@@ -362,10 +363,10 @@ void handle_input(char key) {
     }
 }
 
-void gravity_tick(char *flag) {
+void gravity_tick(char *flag, int *score ) {
   int locked = falldown();
   if (locked) {
-  delete_line();
+  delete_line(score);
   *flag = 0;
   }
 }
@@ -404,6 +405,7 @@ int main() {
     printf("\x1b[2J");
 
     char fallingpiece = 0;
+    int score = 0;
     gametable_init();
 
     // start input thread
@@ -442,12 +444,13 @@ int main() {
                   printf("\033[H");
                   draw();
                   printf("GAME OVER\n");
+                  printf("The score is: %d", score);
                   tcsetattr(0, TCSAFLUSH, &term);
                   exit(0);
                }
                 fallingpiece = 1; 
             } else {
-                gravity_tick(&fallingpiece);
+                gravity_tick(&fallingpiece, &score);
             }
 
             printf("\x1b[2J");
