@@ -6,7 +6,6 @@
 #include <time.h> 
 
 static struct termios term; 
-static int seed = 0; 
 
 #define H 22
 #define W 12
@@ -85,7 +84,9 @@ void enableRawMode() {
 void gametable_init() { 
   for(int i = 0; i < H; i++) {
     for(int j = 0; j < W; j++) {
-      if(i == 0 || i == H-1) { 
+      if(i == 0) { 
+        gametable[i][j] = 4;
+      }else if(i == H-1) { 
         gametable[i][j] = 2;
       } else if(j == 0 || j == W-1) { 
         gametable[i][j] = 3;
@@ -103,7 +104,8 @@ void draw(int *score, int *tick) {
       switch(gametable[i][j]) {
         case 0: printf(" ");break;
         case 1: printf("#");break;
-        case 2: printf("-");break;
+        case 2: printf("▔");break;
+        case 4: printf("▁");break;
         case 3: printf("!");break;
       }
     }
@@ -398,6 +400,7 @@ void *input_thread(void *arg) {
 }
 
 int main() {
+  int seed =0;
     printf("insert a seed here: ");
     scanf("%d", &seed);
     srand(seed);
