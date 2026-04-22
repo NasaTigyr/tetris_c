@@ -96,7 +96,7 @@ void gametable_init() {
   }
 }
   
-void draw() {
+void draw(int *score) {
   for(int i = 0; i < H; i++) {
     for( int j = 0; j < W; j++) {
 //      printf("%d", gametable[i][j]);
@@ -109,6 +109,7 @@ void draw() {
     }
     printf("\n"); 
   }
+  printf("Score: %d", *score);
 }
 
 void iztriichast() {
@@ -429,7 +430,7 @@ int main() {
             handle_input(key);
             printf("\x1b[2J");
             printf("\033[H");
-            draw();
+            draw(&score);
         }
 
         usleep(POLL_MS * 1000); // 1000 = 1ms, Tova e mongo byrzo, mamka mu... 
@@ -442,9 +443,9 @@ int main() {
                 if(spawnpiece() == -1) {
                   printf("\x1b[2J");
                   printf("\033[H");
-                  draw();
-                  printf("GAME OVER\n");
-                  printf("The score is: %d", score);
+                  draw(&score);
+                  printf("\nGAME OVER\n");
+//                  printf("The score is: %d", score);
                   tcsetattr(0, TCSAFLUSH, &term);
                   exit(0);
                }
@@ -455,7 +456,7 @@ int main() {
 
             printf("\x1b[2J");
             printf("\033[H");
-            draw();
+            draw(&score);
         }
     }
 
