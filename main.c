@@ -96,7 +96,7 @@ void gametable_init() {
   }
 }
   
-void draw(int *score) {
+void draw(int *score, int *tick) {
   for(int i = 0; i < H; i++) {
     for( int j = 0; j < W; j++) {
 //      printf("%d", gametable[i][j]);
@@ -109,7 +109,8 @@ void draw(int *score) {
     }
     printf("\n"); 
   }
-  printf("Score: %d", *score);
+  printf("Score: %d\n", *score);
+  printf("speed: %d", *tick);
 }
 
 void iztriichast() {
@@ -364,10 +365,11 @@ void handle_input(char key) {
     }
 }
 
-void gravity_tick(char *flag, int *score ) {
+void gravity_tick(char *flag, int *score, int *tick) {
   int locked = falldown();
   if (locked) {
   delete_line(score);
+  if(*score > 0  && *score%100 == 0) *tick-=10;
   *flag = 0;
   }
 }
@@ -414,7 +416,7 @@ int main() {
     pthread_create(&tid, NULL, input_thread, NULL);
     pthread_detach(tid);
 
-    const int TICK_MS = 200;
+    int TICK_MS = 200;
     const int POLL_MS = 10;
     int elapsed = 0;
 
@@ -430,7 +432,7 @@ int main() {
             handle_input(key);
             printf("\x1b[2J");
             printf("\033[H");
-            draw(&score);
+            draw(&score, &TICK_MS);
         }
 
         usleep(POLL_MS * 1000); // 1000 = 1ms, Tova e mongo byrzo, mamka mu... 
@@ -443,7 +445,7 @@ int main() {
                 if(spawnpiece() == -1) {
                   printf("\x1b[2J");
                   printf("\033[H");
-                  draw(&score);
+                  draw(&score, &TICK_MS);
                   printf("\nGAME OVER\n");
 //                  printf("The score is: %d", score);
                   tcsetattr(0, TCSAFLUSH, &term);
@@ -451,13 +453,15 @@ int main() {
                }
                 fallingpiece = 1; 
             } else {
-                gravity_tick(&fallingpiece, &score);
+                gravity_tick(&fallingpiece, &score, &TICK_MS);
             }
 
             printf("\x1b[2J");
             printf("\033[H");
-            draw(&score);
+            draw(&score, &TICK_MS);
         }
+        
+      
     }
 
     tcsetattr(0, TCSAFLUSH, &term);
