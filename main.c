@@ -10,8 +10,6 @@ static struct termios term;
 #define H 22
 #define W 12
 
-int tekushta[4][4]; 
-
 struct Tekushtachast { 
 
 int chast[4][4]; 
@@ -99,7 +97,6 @@ void gametable_init(int gametable[H][W]) {
   void draw(int *score, int *tick, int gametable[H][W]) {
   for(int i = 0; i < H; i++) {
     for( int j = 0; j < W; j++) {
-//      printf("%d", gametable[i][j]);
       switch(gametable[i][j]) {
         case 0: printf(" ");break;
         case 1: printf("#");break;
@@ -167,10 +164,9 @@ int check_collision(int nx, int ny,int gametable[H][W]) {
             if (tekushtachast.chast[i][j] == 1) {
                 int bx = nx + i;
                 int by = ny + j;
-                /* proverka da ne se izleze ot masiva */
                 if (bx < 0 || bx >= H || by < 0 || by >= W)
                     return 1;
-                if (gametable[bx][by] != 0) /* proverka da ne bi tazi chast da e neshto drugo?(stena, pod...) */
+                if (gametable[bx][by] != 0) 
                     return 1;
             }
         }
@@ -193,21 +189,19 @@ void move_right(int gametable[H][W]) {
 }
 
 int falldown(int gametable[H][W]) {
-    iztriichast(gametable);                          /* remove from board */
+    iztriichast(gametable);                          
 
     if (check_collision(tekushtachast.x + 1, tekushtachast.y, gametable)) {
-        /* Collision below → lock piece in current position */
-        drawpiece(gametable);                       /* da vyrne chasta tam kydeto beshe predi proverkata*/
-        return 1;                           /* promeni flag za da pusne novo parche. */
+        drawpiece(gametable);                       
+        return 1;                           
     }
 
-    /* da se printira na novoto mqsto*/
     tekushtachast.x++;
     drawpiece(gametable);
     return 0;
 }
 
-void printtekushta( int neshto[4][4]) {  // za debugvane na pravilni parcheta.
+void printtekushta( int neshto[4][4]) {  
   for(int i = 0; i < 4; i++) {
     for(int j = 0; j < 4; j++) {
       printf("%d", neshto[i][j]);
@@ -217,16 +211,14 @@ void printtekushta( int neshto[4][4]) {  // za debugvane na pravilni parcheta.
 }
 
  void rotateclck(int gametable[H][W]) {
-    iztriichast(gametable);  // remove from board first
+    iztriichast(gametable);  
     
     int tmp[4][4] = {0};
     
-    // Transpose
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             tmp[j][i] = tekushtachast.chast[i][j];
     
-    // Reverse each row
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 2; j++) {
             int t = tmp[i][j];
@@ -234,7 +226,6 @@ void printtekushta( int neshto[4][4]) {  // za debugvane na pravilni parcheta.
             tmp[i][3-j] = t;
         }
     
-    // Check collision before committing
     int old[4][4];
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
@@ -244,7 +235,6 @@ void printtekushta( int neshto[4][4]) {  // za debugvane na pravilni parcheta.
         for (int j = 0; j < 4; j++)
             tekushtachast.chast[i][j] = tmp[i][j];
     
-    // If collision, undo
     if (check_collision(tekushtachast.x, tekushtachast.y, gametable)) {
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
@@ -259,12 +249,10 @@ void rotatecntrclck(int gametable[H][W]) {
     
     int tmp[4][4] = {0};
     
-    // Transpose
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             tmp[j][i] = tekushtachast.chast[i][j];
     
-    // Reverse each COLUMN instead of row (counter-clockwise)
     for (int j = 0; j < 4; j++)
         for (int i = 0; i < 2; i++) {
             int t = tmp[i][j];
@@ -293,10 +281,7 @@ void rotatecntrclck(int gametable[H][W]) {
 int spawnpiece(int gametable[H][W]) { 
         tekushtachast.x = 0;
         tekushtachast.y = W/2 - 2;
-//    srand(time(NULL));
-//      srand(seed);
     int num = rand()%7;
-    //printf("This is the rand num: %d", num);
     switch(num) {
       case 0: 
         for(int i = 0; i < 4; i++) { 
@@ -414,7 +399,6 @@ int main() {
     int score = 0;
     gametable_init(gametable);
 
-    // start input thread
     pthread_t tid;
     pthread_create(&tid, NULL, input_thread, NULL);
     pthread_detach(tid);
@@ -424,14 +408,12 @@ int main() {
     int elapsed = 0;
 
     while (1) {
-        // grab and clear the latest key atomically
         pthread_mutex_lock(&lock);
         char key = latest_key;
         latest_key = 0;
         pthread_mutex_unlock(&lock);
 
         if (key != 0) {
-            //otmestvane(key, &fallingpiece);
             handle_input(key, gametable);
             printf("\x1b[2J");
             printf("\033[H");
@@ -444,13 +426,11 @@ int main() {
         if (elapsed >= TICK_MS) {
             elapsed = 0;
             if (fallingpiece == 0) {
-                //otmestvane(0, &fallingpiece);
                 if(spawnpiece(gametable) == -1) {
                   printf("\x1b[2J");
                   printf("\033[H");
                   draw(&score, &TICK_MS,gametable);
                   printf("\nGAME OVER\n");
-//                  printf("The score is: %d", score);
                   tcsetattr(0, TCSAFLUSH, &term);
                   exit(0);
                }
