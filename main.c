@@ -10,7 +10,6 @@ static struct termios term;
 #define H 22
 #define W 12
 
-int gametable[H][W]; 
 int tekushta[4][4]; 
 
 struct Tekushtachast { 
@@ -81,7 +80,7 @@ void enableRawMode() {
   tcsetattr(0, TCSAFLUSH, &raw); 
 } 
 
-void gametable_init() { 
+void gametable_init(int gametable[H][W]) { 
   for(int i = 0; i < H; i++) {
     for(int j = 0; j < W; j++) {
       if(i == 0) { 
@@ -97,7 +96,7 @@ void gametable_init() {
   }
 }
   
-void draw(int *score, int *tick) {
+  void draw(int *score, int *tick, int gametable[H][W]) {
   for(int i = 0; i < H; i++) {
     for( int j = 0; j < W; j++) {
 //      printf("%d", gametable[i][j]);
@@ -115,7 +114,7 @@ void draw(int *score, int *tick) {
   printf("speed: %d", *tick);
 }
 
-void iztriichast() {
+void iztriichast( int gametable[H][W] ) {
   for(int i = 0; i < 4; i++) {
     for(int j = 0; j < 4; j++) {
       if(tekushtachast.chast[i][j] == 1) {
@@ -125,7 +124,7 @@ void iztriichast() {
   }
 }
 
-void delete_line(int *score) {
+void delete_line(int *score,int gametable[H][W]) {
   for(int i= 1; i < H -1; i++){
     int full = 1;
     for(int j= 1; j < W -1; j++){
@@ -151,7 +150,7 @@ void delete_line(int *score) {
   }
 }
 
-void drawpiece() {
+void drawpiece(int gametable[H][W]) {
   for(int i = 0; i < 4; i++) {
     for(int j = 0; j < 4; j++) {
       if(tekushtachast.chast[i][j] == 1) {
@@ -162,7 +161,7 @@ void drawpiece() {
 }
 
 
-int check_collision(int nx, int ny) {
+int check_collision(int nx, int ny,int gametable[H][W]) {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (tekushtachast.chast[i][j] == 1) {
@@ -179,32 +178,32 @@ int check_collision(int nx, int ny) {
     return 0;
 }
 
-void move_left() { 
-  iztriichast();
-  if(!check_collision(tekushtachast.x, tekushtachast.y -1))
+void move_left(int gametable[H][W]) { 
+  iztriichast(gametable);
+  if(!check_collision(tekushtachast.x, tekushtachast.y -1, gametable))
     tekushtachast.y--;
-  drawpiece();
+  drawpiece(gametable);
 }
 
-void move_right() { 
-  iztriichast();
-  if(!check_collision(tekushtachast.x, tekushtachast.y + 1))
+void move_right(int gametable[H][W]) { 
+  iztriichast(gametable);
+  if(!check_collision(tekushtachast.x, tekushtachast.y + 1, gametable))
     tekushtachast.y++;
-  drawpiece();
+  drawpiece(gametable);
 }
 
-int falldown() {
-    iztriichast();                          /* remove from board */
+int falldown(int gametable[H][W]) {
+    iztriichast(gametable);                          /* remove from board */
 
-    if (check_collision(tekushtachast.x + 1, tekushtachast.y)) {
+    if (check_collision(tekushtachast.x + 1, tekushtachast.y, gametable)) {
         /* Collision below → lock piece in current position */
-        drawpiece();                       /* da vyrne chasta tam kydeto beshe predi proverkata*/
+        drawpiece(gametable);                       /* da vyrne chasta tam kydeto beshe predi proverkata*/
         return 1;                           /* promeni flag za da pusne novo parche. */
     }
 
     /* da se printira na novoto mqsto*/
     tekushtachast.x++;
-    drawpiece();
+    drawpiece(gametable);
     return 0;
 }
 
@@ -217,8 +216,8 @@ void printtekushta( int neshto[4][4]) {  // za debugvane na pravilni parcheta.
   }
 }
 
- void rotateclck() {
-    iztriichast();  // remove from board first
+ void rotateclck(int gametable[H][W]) {
+    iztriichast(gametable);  // remove from board first
     
     int tmp[4][4] = {0};
     
@@ -246,17 +245,17 @@ void printtekushta( int neshto[4][4]) {  // za debugvane na pravilni parcheta.
             tekushtachast.chast[i][j] = tmp[i][j];
     
     // If collision, undo
-    if (check_collision(tekushtachast.x, tekushtachast.y)) {
+    if (check_collision(tekushtachast.x, tekushtachast.y, gametable)) {
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
                 tekushtachast.chast[i][j] = old[i][j];
     }
     
-    drawpiece();
+    drawpiece(gametable);
 }
 
-void rotatecntrclck() {
-    iztriichast();
+void rotatecntrclck(int gametable[H][W]) {
+    iztriichast(gametable);
     
     int tmp[4][4] = {0};
     
@@ -282,16 +281,16 @@ void rotatecntrclck() {
         for (int j = 0; j < 4; j++)
             tekushtachast.chast[i][j] = tmp[i][j];
     
-    if (check_collision(tekushtachast.x, tekushtachast.y)) {
+    if (check_collision(tekushtachast.x, tekushtachast.y, gametable)) {
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
                 tekushtachast.chast[i][j] = old[i][j];
     }
     
-    drawpiece();
+    drawpiece(gametable);
 } 
 
-int spawnpiece() { 
+int spawnpiece(int gametable[H][W]) { 
         tekushtachast.x = 0;
         tekushtachast.y = W/2 - 2;
 //    srand(time(NULL));
@@ -349,28 +348,28 @@ int spawnpiece() {
         }
       break;
     }
-    if(check_collision(tekushtachast.x, tekushtachast.y)) {
+    if(check_collision(tekushtachast.x, tekushtachast.y, gametable)) {
       return -1;
     }
-      drawpiece();
+      drawpiece(gametable);
       return 0;
 }
 
-void handle_input(char key) {
+void handle_input(char key, int gametable[H][W]) {
 
     switch(key) { 
-      case 'a': move_left();break;
-      case 'e': move_right();break;
-      case 'o': falldown();break;
-      case 'w': rotatecntrclck();break;
-      case 'v': rotateclck(); break; 
+      case 'a': move_left(gametable);break;
+      case 'e': move_right(gametable);break;
+      case 'o': falldown(gametable);break;
+      case 'w': rotatecntrclck(gametable);break;
+      case 'v': rotateclck(gametable); break; 
     }
 }
 
-void gravity_tick(char *flag, int *score, int *tick) {
-  int locked = falldown();
+void gravity_tick(char *flag, int *score, int *tick,int gametable[H][W]) {
+  int locked = falldown(gametable);
   if (locked) {
-  delete_line(score);
+  delete_line(score, gametable);
   if(*score > 0  && *score%100 == 0) *tick-=10;
   *flag = 0;
   }
@@ -410,9 +409,10 @@ int main() {
     enableRawMode();
     printf("\x1b[2J");
 
+    int gametable[H][W]; 
     char fallingpiece = 0;
     int score = 0;
-    gametable_init();
+    gametable_init(gametable);
 
     // start input thread
     pthread_t tid;
@@ -432,10 +432,10 @@ int main() {
 
         if (key != 0) {
             //otmestvane(key, &fallingpiece);
-            handle_input(key);
+            handle_input(key, gametable);
             printf("\x1b[2J");
             printf("\033[H");
-            draw(&score, &TICK_MS);
+            draw(&score, &TICK_MS, gametable);
         }
 
         usleep(POLL_MS * 1000); // 1000 = 1ms, Tova e mongo byrzo, mamka mu... 
@@ -445,10 +445,10 @@ int main() {
             elapsed = 0;
             if (fallingpiece == 0) {
                 //otmestvane(0, &fallingpiece);
-                if(spawnpiece() == -1) {
+                if(spawnpiece(gametable) == -1) {
                   printf("\x1b[2J");
                   printf("\033[H");
-                  draw(&score, &TICK_MS);
+                  draw(&score, &TICK_MS,gametable);
                   printf("\nGAME OVER\n");
 //                  printf("The score is: %d", score);
                   tcsetattr(0, TCSAFLUSH, &term);
@@ -456,12 +456,12 @@ int main() {
                }
                 fallingpiece = 1; 
             } else {
-                gravity_tick(&fallingpiece, &score, &TICK_MS);
+                gravity_tick(&fallingpiece, &score, &TICK_MS, gametable);
             }
 
             printf("\x1b[2J");
             printf("\033[H");
-            draw(&score, &TICK_MS);
+            draw(&score, &TICK_MS,gametable);
         }
         
       
