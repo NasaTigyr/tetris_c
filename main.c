@@ -83,7 +83,7 @@ void gametable_init(int gametable[H][W]) {
     for(int j = 0; j < W; j++) {
       if(i == 0) { 
         gametable[i][j] = 4;
-      }else if(i == H-1) { 
+      } else if(i == H-1) { 
         gametable[i][j] = 2;
       } else if(j == 0 || j == W-1) { 
         gametable[i][j] = 3;
@@ -164,10 +164,12 @@ int check_collision(int nx, int ny,int gametable[H][W]) {
             if (tekushtachast.chast[i][j] == 1) {
                 int bx = nx + i;
                 int by = ny + j;
-                if (bx < 0 || bx >= H || by < 0 || by >= W)
+                if (bx < 0 || bx >= H || by < 0 || by >= W) {
                     return 1;
-                if (gametable[bx][by] != 0) 
+                }
+                if (gametable[bx][by] != 0) {
                     return 1;
+                }
             }
         }
     }
@@ -176,15 +178,17 @@ int check_collision(int nx, int ny,int gametable[H][W]) {
 
 void move_left(int gametable[H][W]) { 
   iztriichast(gametable);
-  if(!check_collision(tekushtachast.x, tekushtachast.y -1, gametable))
+  if(!check_collision(tekushtachast.x, tekushtachast.y -1, gametable)) {
     tekushtachast.y--;
+  }
   drawpiece(gametable);
 }
 
 void move_right(int gametable[H][W]) { 
   iztriichast(gametable);
-  if(!check_collision(tekushtachast.x, tekushtachast.y + 1, gametable))
+  if(!check_collision(tekushtachast.x, tekushtachast.y + 1, gametable)) {
     tekushtachast.y++;
+  }
   drawpiece(gametable);
 }
 
@@ -215,30 +219,39 @@ void printtekushta( int neshto[4][4]) {
     
     int tmp[4][4] = {0};
     
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
             tmp[j][i] = tekushtachast.chast[i][j];
+        }
+    }
     
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 2; j++) {
             int t = tmp[i][j];
             tmp[i][j] = tmp[i][3-j];
             tmp[i][3-j] = t;
         }
+    }
     
     int old[4][4];
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
             old[i][j] = tekushtachast.chast[i][j];
+        }
+    }
     
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) { 
             tekushtachast.chast[i][j] = tmp[i][j];
+        }
+    }
     
     if (check_collision(tekushtachast.x, tekushtachast.y, gametable)) {
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
                 tekushtachast.chast[i][j] = old[i][j];
+            }
+        }
     }
     
     drawpiece(gametable);
@@ -249,30 +262,39 @@ void rotatecntrclck(int gametable[H][W]) {
     
     int tmp[4][4] = {0};
     
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
             tmp[j][i] = tekushtachast.chast[i][j];
+        }
+    }
     
-    for (int j = 0; j < 4; j++)
+    for (int j = 0; j < 4; j++) {
         for (int i = 0; i < 2; i++) {
             int t = tmp[i][j];
             tmp[i][j] = tmp[3-i][j];
             tmp[3-i][j] = t;
         }
+    }
     
     int old[4][4];
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
             old[i][j] = tekushtachast.chast[i][j];
+        }
+    }
     
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
             tekushtachast.chast[i][j] = tmp[i][j];
+        }
+    }
     
     if (check_collision(tekushtachast.x, tekushtachast.y, gametable)) {
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
                 tekushtachast.chast[i][j] = old[i][j];
+            }
+        }
     }
     
     drawpiece(gametable);
